@@ -1,6 +1,6 @@
 import sqlite3
 import pandas as pd
-import cryptography
+from cryptography.fernet import Fernet
 import getpass
 
 
@@ -20,8 +20,13 @@ class UserAuthentication:
 
 # ------------------------ Encryptor Class ------------------------------
 class Encryptor:
-    def __init__(self, key=None):
-        pass
+    def __init__(self, key):
+        if(key == None):
+            self.key = Fernet.generate_key()
+        else:
+            pass
+        self.fernet = Fernet(self.key)
+        
 
     def encrypt(self, plaintext: str) -> str:
         '''Encrypts the plaintext passwords
@@ -31,7 +36,8 @@ class Encryptor:
         Returns:
             str: The encrypted password
         '''
-        pass
+        enc_pass = self.fernet.encrypt(plaintext.encode())
+        return enc_pass
 
     def decrypt(self, encrypted_text: str) -> str:
         '''Decrypts the encrypted passwords
@@ -41,7 +47,8 @@ class Encryptor:
         Returns:
             str: The decrypted password
         '''
-        pass
+        dec_pass = self.fernet.decrypt(encrypted_text).decode()
+        return dec_pass
 
 
 # -------------------------- SQLite Database Class ----------------------
