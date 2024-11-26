@@ -51,50 +51,97 @@ class Encryptor:
         return dec_pass
 
 
-# -------------------------- SQLite Database Class ----------------------
+# -------------------------- SQLite Database Class ---------------------
+# Bryant Morris
+# -------------------------- SQLite Database Class ---------------------
+
 class SQLiteDB:
     def __init__(self, db_file="passwords.db"):
-        pass
+        """
+        Initializes the SQLiteDB instance, connecting to the specified database file.
+
+        Args:
+            db_file (str): The database file name.
+        """
+        self.db_file = db_file
+        self.connection = sqlite3.connect(self.db_file)
+        self.cursor = self.connection.cursor()
+        self._create_table()
 
     def _create_table(self):
-        '''Creates the table for storing passwords'''
-        pass
-
-    def store_password(self, username: str, encrypted_password: str):
-        '''Stores the password in the database
-        
-        Args:
-            username (str): The username of the user
-            encrypted_password (str): The encrypted password
+        """
+        Creates the table for storing passwords if it doesn't already exist.
+        """
+        create_table_query = '''
+        CREATE TABLE IF NOT EXISTS passwords (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            username TEXT NOT NULL,
+            encrypted_password TEXT NOT NULL
+        )
         '''
-        pass
+        self.cursor.execute(create_table_query)
+        self.connection.commit()
 
-    def get_password(self, username: str) -> str:
-        '''Retrieves the password from the database
-        
+    def store_password(self, username, encrypted_password):
+        """
+        Stores the password in the database.
+
         Args:
-            username (str): The username of the user
+            username (str): The username of the user.
+            encrypted_password (str): The encrypted password.
+        """
+        insert_query = '''
+        INSERT INTO passwords (username, encrypted_password)
+        VALUES (?, ?)
+        '''
+        self.cursor.execute(insert_query, (username, encrypted_password))
+        self.connection.commit()
+
+    def get_password(self, username):
+        """
+        Retrieves the password from the database.
+
+        Args:
+            username (str): The username of the user.
+
         Returns:
-            str: The decrypted password
+            str: The encrypted password, or None if not found.
+        """
+        select_query = '''
+        SELECT encrypted_password FROM passwords
+        WHERE username = ?
         '''
-        pass
+        self.cursor.execute(select_query, (username,))
+        result = self.cursor.fetchone()
+        return result[0] if result else None
 
-    def delete_password(self, username: str):
-        '''Deletes the password from the database
-        
+    def delete_password(self, username):
+        """
+        Deletes the password from the database.
+
         Args:
-            username (str): The username of the user
+            username (str): The username of the user.
+        """
+        delete_query = '''
+        DELETE FROM passwords
+        WHERE username = ?
         '''
-        pass
+        self.cursor.execute(delete_query, (username,))
+        self.connection.commit()
 
-    def list_passwords(self) -> pd.DataFrame:
-        '''Lists all the passwords in the database
-        
+    def list_passwords(self):
+        """
+        Lists all the passwords in the database.
+
         Returns:
-            pd.DataFrame: A DataFrame containing all the passwords
+            pd.DataFrame: A DataFrame containing all the passwords.
+        """
+        select_all_query = '''
+        SELECT username, encrypted_password FROM passwords
         '''
-        pass
-
+        self.cursor.execute(select_all_query)
+        rows = self.cursor.fetchall()
+        return pd.DataFrame(rows, columns=['username', 'encrypted_password'])
 
 # -------------------------- User Interface Class -----------------------
 class UserInterface:
