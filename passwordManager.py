@@ -53,7 +53,7 @@ class Encryptor:
 
 # -------------------------- SQLite Database Class ---------------------
 # Bryant Morris
-# -------------------------- SQLite Database Class ---------------------
+# -------------------------- SQLite Database Class --------------------- 
 
 class SQLiteDB:
     def __init__(self, db_file="passwords.db"):
