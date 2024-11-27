@@ -75,29 +75,30 @@ class SQLiteDB:
         create_table_query = '''
         CREATE TABLE IF NOT EXISTS passwords (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
+            website_name TEXT NOT NULL,
             username TEXT NOT NULL,
-            encrypted_password TEXT NOT NULL
+            password TEXT NOT NULL
         )
         '''
         self.cursor.execute(create_table_query)
         self.connection.commit()
 
-    def store_password(self, username, encrypted_password):
+    def store_password(self, username, password_name, password):
         """
         Stores the password in the database.
 
         Args:
             username (str): The username of the user.
-            encrypted_password (str): The encrypted password.
+            password (str): The encrypted password.
         """
         insert_query = '''
-        INSERT INTO passwords (username, encrypted_password)
+        INSERT INTO passwords (username, password)
         VALUES (?, ?)
         '''
-        self.cursor.execute(insert_query, (username, encrypted_password))
+        self.cursor.execute(insert_query, (username, website_name, password))
         self.connection.commit()
 
-    def get_password(self, username):
+    def get_password(self, username, website_name):
         """
         Retrieves the password from the database.
 
@@ -108,10 +109,10 @@ class SQLiteDB:
             str: The encrypted password, or None if not found.
         """
         select_query = '''
-        SELECT encrypted_password FROM passwords
-        WHERE username = ?
+        SELECT password FROM passwords
+        WHERE username = ? and wesite_name = ?
         '''
-        self.cursor.execute(select_query, (username,))
+        self.cursor.execute(select_query, (username, password))
         result = self.cursor.fetchone()
         return result[0] if result else None
 
@@ -137,11 +138,11 @@ class SQLiteDB:
             pd.DataFrame: A DataFrame containing all the passwords.
         """
         select_all_query = '''
-        SELECT username, encrypted_password FROM passwords
+        SELECT username, password FROM passwords
         '''
         self.cursor.execute(select_all_query)
         rows = self.cursor.fetchall()
-        return pd.DataFrame(rows, columns=['username', 'encrypted_password'])
+        return pd.DataFrame(rows, columns=['username', 'password'])
 
 # -------------------------- User Interface Class -----------------------
 class UserInterface:
