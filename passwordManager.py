@@ -55,13 +55,13 @@ class Encryptor:
 # Bryant Morris
 # -------------------------- SQLite Database Class --------------------- 
 
+import sqlite3
+import pandas as pd
+
 class SQLiteDB:
     def __init__(self, db_file="passwords.db"):
         """
         Initializes the SQLiteDB instance, connecting to the specified database file.
-
-        Args:
-            db_file (str): The database file name.
         """
         self.db_file = db_file
         self.connection = sqlite3.connect(self.db_file)
@@ -83,66 +83,56 @@ class SQLiteDB:
         self.cursor.execute(create_table_query)
         self.connection.commit()
 
-    def store_password(self, username, password_name, password):
+    def store_password(self, website_name, username, password):
         """
         Stores the password in the database.
-
-        Args:
-            username (str): The username of the user.
-            password (str): The encrypted password.
         """
         insert_query = '''
-        INSERT INTO passwords (username, password)
-        VALUES (?, ?)
+        INSERT INTO passwords (website_name, username, password)
+        VALUES (?, ?, ?)
         '''
-        self.cursor.execute(insert_query, (username, website_name, password))
+        self.cursor.execute(insert_query, (website_name, username, password))
         self.connection.commit()
 
-    def get_password(self, username, website_name):
+    def get_password(self, website_name, username):
         """
         Retrieves the password from the database.
-
-        Args:
-            username (str): The username of the user.
-
-        Returns:
-            str: The encrypted password, or None if not found.
         """
         select_query = '''
         SELECT password FROM passwords
-        WHERE username = ? and wesite_name = ?
+        WHERE website_name = ? AND username = ?
         '''
-        self.cursor.execute(select_query, (username, password))
+        self.cursor.execute(select_query, (website_name, username))
         result = self.cursor.fetchone()
         return result[0] if result else None
 
-    def delete_password(self, username):
+    def delete_password(self, website_name, username):
         """
         Deletes the password from the database.
-
-        Args:
-            username (str): The username of the user.
         """
         delete_query = '''
         DELETE FROM passwords
-        WHERE username = ?
+        WHERE website_name = ? AND username = ?
         '''
-        self.cursor.execute(delete_query, (username,))
+        self.cursor.execute(delete_query, (website_name, username))
         self.connection.commit()
 
     def list_passwords(self):
         """
         Lists all the passwords in the database.
-
-        Returns:
-            pd.DataFrame: A DataFrame containing all the passwords.
         """
         select_all_query = '''
-        SELECT username, password FROM passwords
+        SELECT website_name, username, password FROM passwords
         '''
         self.cursor.execute(select_all_query)
         rows = self.cursor.fetchall()
-        return pd.DataFrame(rows, columns=['username', 'password'])
+        return pd.DataFrame(rows, columns=['website_name', 'username', 'password'])
+
+    def close(self):
+        """
+        Closes the database connection.
+        """
+        self.connection.close()
 
 # -------------------------- User Interface Class -----------------------
 class UserInterface:
