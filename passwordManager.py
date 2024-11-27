@@ -10,15 +10,15 @@ class UserAuthentication:
         """Constructor for UserAuthentication."""
         self.stored_username = "admin"
         self.stored_password =  "password"  
-        pass
 
     def authenticate(self) -> bool:
         for i in range(3):
             username = input("Enter your username: ")
             password = getpass.getpass("Enter your password: ")
+            if username == self.stored_username and password == self.stored_password:
                 return True
             print("Authentication failed.")
-            return False
+        return False
 
 
 
