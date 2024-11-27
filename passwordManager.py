@@ -8,14 +8,18 @@ import getpass
 class UserAuthentication:
     def __init__(self):
         """Constructor for UserAuthentication."""
+        self.stored_username = "admin"
+        self.stored_password =  "password"  
         pass
 
     def authenticate(self) -> bool:
-        '''Authenticates the user
-        Returns:
-            True if the user is authenticated, False otherwise
-        '''
-        pass
+        for i in range(3):
+            username = input("Enter your username: ")
+            password = getpass.getpass("Enter your password: ")
+                return True
+            print("Authentication failed.")
+            return False
+
 
 
 # ------------------------ Encryptor Class ------------------------------
