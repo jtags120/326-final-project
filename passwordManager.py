@@ -83,51 +83,6 @@ class SQLiteDB:
         self.cursor.execute(create_table_query)
         self.connection.commit()
 
-    def store_password(self, website_name, username, password):
-        """
-        Stores the password in the database.
-        """
-        insert_query = '''
-        INSERT INTO passwords (website_name, username, password)
-        VALUES (?, ?, ?)
-        '''
-        self.cursor.execute(insert_query, (website_name, username, password))
-        self.connection.commit()
-
-    def get_password(self, website_name, username):
-        """
-        Retrieves the password from the database.
-        """
-        select_query = '''
-        SELECT password FROM passwords
-        WHERE website_name = ? AND username = ?
-        '''
-        self.cursor.execute(select_query, (website_name, username))
-        result = self.cursor.fetchone()
-        return result[0] if result else None
-
-    def delete_password(self, website_name, username):
-        """
-        Deletes the password from the database.
-        """
-        delete_query = '''
-        DELETE FROM passwords
-        WHERE website_name = ? AND username = ?
-        '''
-        self.cursor.execute(delete_query, (website_name, username))
-        self.connection.commit()
-
-    def list_passwords(self):
-        """
-        Lists all the passwords in the database.
-        """
-        select_all_query = '''
-        SELECT website_name, username, password FROM passwords
-        '''
-        self.cursor.execute(select_all_query)
-        rows = self.cursor.fetchall()
-        return pd.DataFrame(rows, columns=['website_name', 'username', 'password'])
-
     def close(self):
         """
         Closes the database connection.
