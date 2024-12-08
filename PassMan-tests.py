@@ -8,7 +8,27 @@ def testAuth():
 def testEncrypt():
     '''Tests will test encrypting and decrypting passwords, inc. empty passwords
     incorrect keys, or multiple encryption levels'''
-    pass
+    #single encryption
+    encryptor = passwordManager.Encryptor()
+    enc = encryptor.encrypt("password")
+    assert encryptor.decrypt(enc) == "password"
+    
+    #double encryption
+    encryptor2 = passwordManager.Encryptor()
+    doubleEnc = encryptor2.encrypt(enc)
+    print(encryptor.decrypt((encryptor2.decrypt(doubleEnc))))
+    
+    #empty password
+    emptyEnc = encryptor.encrypt("")
+    assert encryptor.decrypt(emptyEnc) == ""
+    
+    #incorrect key
+    encryptor3 = passwordManager.Encryptor()
+    incorrectEnc = encryptor3.encrypt("password")
+    assert encryptor.decrypt(incorrectEnc) != "password"
+    
+    
+    
 
 def testDB():
     '''Tests will test database creation, insertion, and deletion
@@ -23,3 +43,4 @@ def testEdge():
     '''Tests will test edge cases, i.e. empty password, long password(1000+ chars)
     empty passwords etc.'''
     pass
+

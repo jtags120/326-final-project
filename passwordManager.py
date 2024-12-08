@@ -24,15 +24,14 @@ class UserAuthentication:
 
 # ------------------------ Encryptor Class ------------------------------
 class Encryptor:
-    def __init__(self, key):
-        if(key == None):
-            self.key = Fernet.generate_key()
-        else:
-            pass
+    def __init__(self):
+        #Generates key and fernet object based on said key, which allows
+        #encryption and decryption
+        self.key = Fernet.generate_key()
         self.fernet = Fernet(self.key)
         
 
-    def encrypt(self, plaintext: str) -> str:
+    def encrypt(self, plaintext: str) -> bytes:
         '''Encrypts the plaintext passwords
         
         Args:
@@ -40,10 +39,16 @@ class Encryptor:
         Returns:
             str: The encrypted password
         '''
-        enc_pass = self.fernet.encrypt(plaintext.encode())
-        return enc_pass
+        try:
+            if not isinstance(plaintext, bytes):
+                plaintext = plaintext.encode()
+            enc_pass = self.fernet.encrypt(plaintext)
+            return enc_pass
+        except Exception as e:
+            print(f"Error encrypting password: {type(e).__name__}")
+            return None
 
-    def decrypt(self, encrypted_text: str) -> str:
+    def decrypt(self, encrypted_text: bytes) -> str:
         '''Decrypts the encrypted passwords
         
         Args:
@@ -51,8 +56,12 @@ class Encryptor:
         Returns:
             str: The decrypted password
         '''
-        dec_pass = self.fernet.decrypt(encrypted_text).decode()
-        return dec_pass
+        try:
+            dec_pass = self.fernet.decrypt(encrypted_text)
+            return dec_pass.decode()
+        except Exception as e:
+            print(f"Error decrypting password: {type(e).__name__}")
+            return None
 
 
 # -------------------------- SQLite Database Class ---------------------
