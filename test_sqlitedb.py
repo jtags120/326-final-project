@@ -1,3 +1,5 @@
+# type "python3 test_sqlitedb.py" for the unit test run. It should say "Ran 5 tests in "under 1 second" " 
+
 import unittest
 import sqlite3
 import pandas as pd
