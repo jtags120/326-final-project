@@ -143,9 +143,9 @@ class SQLiteDB:
         self.cursor.execute(select_all_query)
         rows = self.cursor.fetchall()
         df = pd.DataFrame(rows, columns=['website_name', 'username', 'password'])
-        for password in df['password'].values:
-            password = self.encryptor.decrypt(password)
-            df['password'] = password
+        for i, password in enumerate(df['password'].values):
+            enc_password = self.encryptor.decrypt(password)
+            df.iloc[i, df.columns.get_loc('password')] = enc_password
         
         return df
 
