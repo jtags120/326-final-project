@@ -250,7 +250,7 @@ class UserInterface:
 def main():
     
     ua = UserAuthentication()
-    if(True):
+    if(ua.authenticate()):
         ui = UserInterface()
         ui.run()
     
