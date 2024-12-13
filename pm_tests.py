@@ -16,7 +16,7 @@ def testEncrypt():
     #double encryption
     encryptor2 = pm.Encryptor()
     doubleEnc = encryptor2.encrypt(enc)
-    print(encryptor.decrypt((encryptor2.decrypt(doubleEnc))))
+    assert encryptor.decrypt((encryptor2.decrypt(doubleEnc))) == "password"
     
     #empty password
     emptyEnc = encryptor.encrypt("")
@@ -27,58 +27,54 @@ def testEncrypt():
     incorrectEnc = encryptor3.encrypt("password")
     assert encryptor.decrypt(incorrectEnc) != "password"
     
+    #non-letter character(nlc)
+    nlc = encryptor.encrypt("test_password")
+    assert encryptor.decrypt(nlc) == "test_password"
     
-    
-
 def testDB():
     '''Tests will test database creation, insertion, and deletion
     Edge case would be empty database'''
     
-    """Set up a temporary database for testing."""
+    #Set up a temporary database for testing.
     db = pm.SQLiteDB("test_passwords.db")
 
-    """Clean up after each test."""
-    db.close()
-    import os
-    os.remove("test_passwords.db")
-    
-    
-    """Test table creation."""
+    #Test table creation.
     db._create_table()
     db.cursor.execute("SELECT name FROM sqlite_master WHERE type='table' AND name='passwords'")
     table_exists = db.cursor.fetchone()
-    assertIsNotNone(table_exists, "Table 'passwords' should exist.")
+    assert table_exists, "Table 'passwords' should exist."
     
-    
-    """Test storing a password."""
+    #Test storing a password.
     db.store_password("example.com", "test_user", "test_password")
     db.cursor.execute("SELECT * FROM passwords WHERE website_name=? AND username=?", ("example.com", "test_user"))
     row = db.cursor.fetchone()
-    assertIsNotNone(row, "Password should be stored in the database.")
-    assertEqual(row[2], "test_user")
-    assertEqual(row[3], "test_password")
+    decrypted_password = db.encryptor.decrypt(row[3])
+    assert row is not None, "Password should be stored in the database."
+    assert row[1] == "example.com"
+    assert row[2] == "test_user"
+    assert decrypted_password == "test_password"
     
     
-    """Test retrieving a password."""
+    #Test retrieving a password.
     db.store_password("example.com", "test_user", "test_password")
     password = db.get_password("example.com", "test_user")
-    assertEqual(password, "test_password", "Retrieved password should match stored password.")
+    assert password == "test_password", "Retrieved password should match stored password."
     
 
-    """Test deleting a password."""
+    #Test deleting a password.
     db.store_password("example.com", "test_user", "test_password")
     db.delete_password("example.com", "test_user")
     password = db.get_password("example.com", "test_user")
-    assertIsNone(password, "Password should be deleted from the database.")
+    assert password is None, "Password should be deleted from the database."
     
     
-    """Test listing all passwords."""
+    #Test listing all passwords.
     db.store_password("example.com", "test_user", "test_password")
     db.store_password("another.com", "user2", "password2")
     df = db.list_passwords()
-    assertEqual(len(df), 2, "There should be two entries in the database.")
-    assertIn("example.com", df['website_name'].values)
-    assertIn("another.com", df['website_name'].values)
+    assert len(df) == 2, "There should be two entries in the database."
+    assert "example.com" in df['website_name'].values
+    assert "another.com" in df['website_name'].values
 
 def testUI():
     '''Tests will test the user interface, i.e. command line'''

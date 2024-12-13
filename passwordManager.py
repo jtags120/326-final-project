@@ -25,13 +25,13 @@ class UserAuthentication:
 
 # ------------------------ Encryptor Class ------------------------------
 class Encryptor:
-    _key = None
+    
     def __init__(self):
         #Generates key and fernet object based on said key, which allows
         #encryption and decryption
-        if Encryptor._key is None:
-            Encryptor._key = Fernet.generate_key()
-        self.fernet = Fernet(Encryptor._key)
+
+        self.key = Fernet.generate_key()
+        self.fernet = Fernet(self.key)
         
 
     def encrypt(self, plaintext: str) -> bytes:
@@ -254,6 +254,7 @@ def main():
         ui = UserInterface()
         ui.run()
     
+    os.remove("passwords.db")
 
 
 if __name__ == "__main__":
