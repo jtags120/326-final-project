@@ -87,7 +87,7 @@ def test_db():
         os.remove("test_passwords.db")
 
 def test_auth():
-    '''Tests will test logins, i.e. password and username are correct inc. if
+    '''Tests will test logins, i.e. passworæd and username are correct inc. if
     password is empty'''
     # Simulate correct login
     auth = pm.UserAuthentication()
@@ -99,7 +99,26 @@ def test_auth():
 
 def test_ui():
     '''Tests will test the user interface, i.e. command line'''
-    pass
+    #Test the correct option
+    with patch('builtins.input', return_value='1'): 
+        ui = pm.UserInterface()
+        with patch.object(ui, 'add_password') as mock_add_password:
+            ui.run() # Runs the UIloop
+            mock_add_password.assert_called_once()
+
+    # Tests invalid option 
+    with patch('builtins.input', return_value='999'):
+        ui = pm.UserInterface()
+        with patch('builtins.print') as mock_print:
+            ui.run()
+            mock_print.assert_called_with("Invalid choice. Please try again.")
+
+    # Test list of password options 
+    with patch('builtins.input', return_value='4'):
+        ui = pm.UserInterface()
+        with patch.object(ui,'list_passwords') as mock_list_passwords:
+            ui.run()
+            mock_list_passwords.assert_called_once()
 
 
 
