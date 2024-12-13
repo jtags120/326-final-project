@@ -25,23 +25,14 @@ class UserAuthentication:
 
 # ------------------------ Encryptor Class ------------------------------
 class Encryptor:
-    
-    def __init__(self):
-        #Generates key and fernet object based on said key, which allows
-        #encryption and decryption
-
-        self.key = Fernet.generate_key()
+    def __init__(self, key=None):
+        if key is None:
+            self.key = Fernet.generate_key()
+        else:
+            self.key = key
         self.fernet = Fernet(self.key)
         
-
     def encrypt(self, plaintext: str) -> bytes:
-        '''Encrypts the plaintext passwords
-        
-        Args:
-            plaintext (str): The plaintext password to encrypt
-        Returns:
-            str: The encrypted password
-        '''
         try:
             if not isinstance(plaintext, bytes):
                 plaintext = plaintext.encode()
@@ -52,13 +43,6 @@ class Encryptor:
             return None
 
     def decrypt(self, encrypted_text: bytes) -> str:
-        '''Decrypts the encrypted passwords
-        
-        Args:
-            encrypted_text (str): The encrypted password to decrypt
-        Returns:
-            str: The decrypted password
-        '''
         try:
             dec_pass = self.fernet.decrypt(encrypted_text)
             return dec_pass.decode()
@@ -66,21 +50,20 @@ class Encryptor:
             print(f"Error decrypting password: {type(e).__name__}")
             return None
 
+# Ensure the rest of the class methods align with this change
 
 # -------------------------- SQLite Database Class ---------------------
 # Bryant Morris
 # -------------------------- SQLite Database Class --------------------- 
+# Update SQLiteDB class to accept an encryptor instance
 class SQLiteDB:
-    def __init__(self, db_file="passwords.db"):
-        """
-        Initializes the SQLiteDB instance, connecting to the specified database file.
-        """
+    def __init__(self, db_file="passwords.db", encryptor=None):
         self.db_file = db_file
         self.connection = sqlite3.connect(self.db_file)
         self.cursor = self.connection.cursor()
         self._create_table()
-        self.encryptor = Encryptor()
-
+        self.encryptor = encryptor if encryptor else Encryptor()
+    
     def _create_table(self):
         """
         Creates the table for storing passwords if it doesn't already exist.
@@ -117,10 +100,11 @@ class SQLiteDB:
         WHERE website_name = ? AND username = ?
         '''
         self.cursor.execute(select_query, (website_name, username))
-        result = self.cursor.fetchone()[0]
-        result = self.encryptor.decrypt(result)
-        
-        return result if result else None
+        result = self.cursor.fetchone()
+        if result:
+            return self.encryptor.decrypt(result[0])
+        return None
+
 
     def delete_password(self, website_name, username):
         """

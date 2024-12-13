@@ -1,7 +1,5 @@
 import pytest
 import passwordManager as pm
-from unittest.mock import patch
-from cryptography.fernet import Fernet
 
 def test_encrypt():
     '''Tests will test encrypting and decrypting passwords, including empty passwords,
@@ -33,12 +31,8 @@ def test_db():
     '''Tests will test database creation, insertion, and deletion
     Edge case would be empty database'''
 
-    # Create a single Encryptor for consistent encryption and decryption
-    common_key = Fernet.generate_key()
-    common_encryptor = pm.Encryptor(common_key)
-
-    # Set up a temporary database for testing with the same Encryptor
-    db = pm.SQLiteDB("test_passwords.db", encryptor=common_encryptor)
+    # Set up a temporary database for testing.
+    db = pm.SQLiteDB("test_passwords.db")
 
     try:
         # Test table creation.
@@ -51,7 +45,6 @@ def test_db():
         db.store_password("example.com", "test_user", "test_password")
         db.cursor.execute("SELECT * FROM passwords WHERE website_name=? AND username=?", ("example.com", "test_user"))
         row = db.cursor.fetchone()
-        print(f"Stored Row: {row}")  # Debugging statement
         decrypted_password = db.encryptor.decrypt(row[3])
         assert row is not None, "Password should be stored in the database."
         assert row[1] == "example.com"
@@ -60,16 +53,11 @@ def test_db():
 
         # Test retrieving a password.
         password = db.get_password("example.com", "test_user")
-        print(f"Retrieved Password: {password}")  # Debugging statement
         assert password == "test_password", "Retrieved password should match stored password."
 
         # Test deleting a password.
         db.delete_password("example.com", "test_user")
-        db.cursor.execute("SELECT * FROM passwords WHERE website_name=? AND username=?", ("example.com", "test_user"))
-        row_after_delete = db.cursor.fetchone()
-        print(f"Row after delete: {row_after_delete}")  # Debugging statement
         password = db.get_password("example.com", "test_user")
-        print(f"Password after delete: {password}")  # Debugging statement
         assert password is None, "Password should be deleted from the database."
 
         # Test listing all passwords.
@@ -91,8 +79,7 @@ def test_auth():
     password is empty'''
     # Simulate correct login
     auth = pm.UserAuthentication()
-    with patch('builtins.input', return_value='admin'), patch('getpass.getpass', return_value='password'):
-        assert auth.authenticate() == True
+    assert auth.authenticate() == True
 
 def test_ui():
     '''Tests will test the user interface, i.e. command line'''
