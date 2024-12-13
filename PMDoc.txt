@@ -1,0 +1,65 @@
+Josh Tagliere, Idil Ibrahim, Bryant Morris, Yohanes Kifle
+
+Github: https://github.com/jtags120/326-final-project.git
+
+Documentation: 
+
+What our Project is & What it Does: 
+
+This CLI Password Manager is a command-line interface application that helps 
+users securely store, add, and retrieve their passwords. It is designed to be 
+simple to use while providing reliable functionality 
+for managing sensitive information.
+
+How to Run the Program: 
+
+To run the Password Manager program, download the Python file from our 
+GitHub repository. Open your terminal, go to the folder where the file is saved.
+ Type in python password_manager.py, with the username and password being 
+ "admin" and "password" respectively, and the program will show you a menu of 
+ options. Follow the prompts to add or find passwords, 
+ and it will guide you step by step.
+
+How to Use/Interpret the Output: 
+
+Once the program starts, you’ll see a menu with options to add, retrieve, 
+or delete passwords. When you add a password, it will ask for the service name, 
+username, and password, then confirm that the password is saved. If you retrieve
+ a password, just enter the service name, and the program will show the stored 
+ credentials. If something goes wrong, the program will give an error message 
+ explaining the issue, like when it can’t find a service.
+
+
+Annotated Bibliography: 
+					Bibliography
+					
+“Python SQLite,” GeeksforGeeks, Sep. 22, 2021. https://www.geeksforgeeks.org/python-sqlite/
+
+
+This article explained how to use SQLite with Python. It showed us how to set 
+up a database to store passwords safely, which was important for keeping user 
+data secure in our Password Manager project. We used the guide to ensure the 
+data is stored correctly and can be retrieved when needed.
+R. Python, “Build Command-Line Interfaces With Python’s argparse – Real Python,”
+realpython.com. https://realpython.com/command-line-interfaces-python-argparse/
+This source was helpful and  taught us how to use the argparse library in Python
+to build a user-friendly command-line interface (CLI). It showed us how to 
+design clear prompts for users to interact with the Password Manager. This made
+it easy for us to create a smooth flow for adding, retrieving, and deleting 
+passwords.
+Uniqkey, “Cloud-based vs Local Password Storage: The Pros and Cons,” 
+The Uniqkey Blog, May 10, 2023. https://blog.uniqkey.eu/cloud-based-vs-local-password-storage/
+This article helped us decide to use local storage for our Password Manager 
+instead of cloud-based storage. It explained the risks and benefits of each 
+option, and we chose local storage for better security and control over user 
+data. This decision influenced how we designed the password-saving system.
+
+
+
+
+
+
+
+
+
+

@@ -237,8 +237,8 @@ def main():
     if(ua.authenticate()):
         ui = UserInterface()
         ui.run()
+        os.remove("passwords.db")
     
-    os.remove("passwords.db")
 
 
 if __name__ == "__main__":

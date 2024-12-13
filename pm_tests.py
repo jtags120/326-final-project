@@ -93,15 +93,15 @@ def test_auth():
     auth = pm.UserAuthentication()
     with patch('builtins.input', return_value='admin'), patch('getpass.getpass', return_value='password'):
         assert auth.authenticate() == True
+    # Simulate wrong login
+    with patch('builtins.input', return_value='admin'), patch('getpass.getpass', return_value='wrong_password'):
+        assert auth.authenticate() == False
 
 def test_ui():
     '''Tests will test the user interface, i.e. command line'''
     pass
 
-def test_edge():
-    '''Tests will test edge cases, i.e. empty password, long password(1000+ chars)
-    empty passwords etc.'''
-    pass
+
 
 if __name__ == "__main__":
-    pytest.main()
+    pytest.main([__file__])
